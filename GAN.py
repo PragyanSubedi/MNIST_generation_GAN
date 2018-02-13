@@ -34,10 +34,45 @@ def discriminator(X, reuse):
 
         hidden2 = tf.layers.dense(inputs=hidden1, units=28)
 
-        hidden2 = tf.maximum(alph * hidden2, hidden2)
+        hidden2 = tf.maximum(alpha * hidden2, hidden2)
 
         logits = tf.layers.dense(hidden2,units=1)
         output = tf.sigmoid(logits)
 
-        return output
+        return output,logits
 
+real_images = tf.placeholder(tf.float32,shape=[None,784])
+z = tf.placeholder(tf.float32,shape=[None,100])
+
+G = generator(z)
+
+D_output_real , D_logits_real = discriminator(real_images)
+
+D_output_fake, D_logits_fake = discriminator(G,reuse=True)
+
+# LOSSES
+
+def loss_func(logits_in,labels_in):
+    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits_in,labels=labels_in))
+
+# DISCRIMINATOR LOSS WHEN TRAINED ON REAL DATA
+
+D_real_loss = loss_func(D_logits_real,tf.ones_like(D_logits_real)*0.9)
+D_fake_loss = loss_func(D_logits_fake,tf.zeros_like(D_logits_real))
+
+D_loss = D_real_loss + D_fake_loss
+
+G_loss = loss_func(D_logits_fake,tf.ones_like(D_logits_fake))
+
+learning_rate = 0.001
+
+
+tvars = tf.trainable_variables()
+
+d_vars = [var for var in tvars if 'dis' in var.name]
+
+g_vars = [var for var in tvars if 'gen' in var.name]
+
+D_trainer = tf.train.AdamOptimizer(learning_rate).minimize(D_loss_var_list=d_vars)
+
+G_trainer = tf.train.AdamOptimizer(learning_rate).minimize(G_loss_var_list=g_vars)
