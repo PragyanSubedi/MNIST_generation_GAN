@@ -85,45 +85,56 @@ epochs = 500
 init = tf.global_variables_initializer()
 
 samples=[]
+saver = tf.train.Saver(var_list=g_vars)
+# TRAINER
 
+# with tf.Session() as sess:
+#     sess.run(init)
+#
+#     # Recall an epoch is an entire run through the training data
+#     for e in range(epochs):
+#         # // indicates classic division
+#         num_batches = mnist.train.num_examples // batch_size
+#
+#         for i in range(num_batches):
+#             # Grab batch of images
+#             batch = mnist.train.next_batch(batch_size)
+#
+#             # Get images, reshape and rescale to pass to D
+#             batch_images = batch[0].reshape((batch_size, 784))
+#             batch_images = batch_images * 2 - 1
+#
+#             # Z (random latent noise data for Generator)
+#             # -1 to 1 because of tanh activation
+#             batch_z = np.random.uniform(-1, 1, size=(batch_size, 100))
+#
+#             # Run optimizers, no need to save outputs, we won't use them
+#             _ = sess.run(D_trainer, feed_dict={real_images: batch_images, z: batch_z})
+#             _ = sess.run(G_trainer, feed_dict={z: batch_z})
+#
+#         print("Currently on Epoch {} of {} total...".format(e + 1, epochs))
+#
+#         # Sample from generator as we're training for viewing afterwards
+#         sample_z = np.random.uniform(-1, 1, size=(1, 100))
+#         gen_sample = sess.run(generator(z, reuse=True), feed_dict={z: sample_z})
+#
+#         samples.append(gen_sample)
+#         saver.save(sess, './models/500_epoch_model.ckpt')
+# plt.imshow(samples[2].reshape(28,28))
+# plt.show()
+
+
+# RESTORING MODEL
+
+new_samples = []
 with tf.Session() as sess:
-    sess.run(init)
+    saver.restore(sess, './models/500_epoch_model.ckpt')
 
-    # Recall an epoch is an entire run through the training data
-    for e in range(epochs):
-        # // indicates classic division
-        num_batches = mnist.train.num_examples // batch_size
-
-        for i in range(num_batches):
-            # Grab batch of images
-            batch = mnist.train.next_batch(batch_size)
-
-            # Get images, reshape and rescale to pass to D
-            batch_images = batch[0].reshape((batch_size, 784))
-            batch_images = batch_images * 2 - 1
-
-            # Z (random latent noise data for Generator)
-            # -1 to 1 because of tanh activation
-            batch_z = np.random.uniform(-1, 1, size=(batch_size, 100))
-
-            # Run optimizers, no need to save outputs, we won't use them
-            _ = sess.run(D_trainer, feed_dict={real_images: batch_images, z: batch_z})
-            _ = sess.run(G_trainer, feed_dict={z: batch_z})
-
-        print("Currently on Epoch {} of {} total...".format(e + 1, epochs))
-
-        # Sample from generator as we're training for viewing afterwards
+    for x in range(5):
         sample_z = np.random.uniform(-1, 1, size=(1, 100))
         gen_sample = sess.run(generator(z, reuse=True), feed_dict={z: sample_z})
 
-        samples.append(gen_sample)
+        new_samples.append(gen_sample)
 
-plt.imshow(samples[2].reshape(28,28))
+plt.imshow(samples[0].reshape(28,28),cmap='Greys')
 plt.show()
-# saver = tf.train.Saver(var_list =g_vars)
-# new_samples=[]
-# with tf.Session() as sess:
-#     saver.restore(sess,'./models/500_epoch_model.ckpt')
-#     gen_sample = sess.run(generator(z,reuse=True),feed_dict={z:sample_z})
-#     new_samples.append(gen_sample)
-
