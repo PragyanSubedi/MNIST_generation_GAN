@@ -12,6 +12,5 @@ Generates images matching with the MNIST dataset. Performs well!
 
 Model is trained using the MNIST dataset.
 
-Uses a generator and a discriminator. 
 
 
