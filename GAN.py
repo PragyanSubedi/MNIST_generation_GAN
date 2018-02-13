@@ -15,7 +15,7 @@ def generator(z,reuse=None):
         alpha = 0.01
         hidden1 = tf.maximum(alpha*hidden1,hidden1)
 
-        hidden2 = tf.layers.dense(inputs=hidden1,units=28)
+        hidden2 = tf.layers.dense(inputs=hidden1,units=128)
 
         hidden2 = tf.maximum(alpha*hidden2,hidden2)
 
@@ -33,7 +33,7 @@ def discriminator(X, reuse=None):
         alpha = 0.01
         hidden1 = tf.maximum(alpha * hidden1, hidden1)
 
-        hidden2 = tf.layers.dense(inputs=hidden1, units=28)
+        hidden2 = tf.layers.dense(inputs=hidden1, units=128)
 
         hidden2 = tf.maximum(alpha * hidden2, hidden2)
 
@@ -136,5 +136,5 @@ with tf.Session() as sess:
 
         new_samples.append(gen_sample)
 
-plt.imshow(samples[0].reshape(28,28),cmap='Greys')
+plt.imshow(new_samples[0].reshape(28,28),cmap='Greys')
 plt.show()
